@@ -1,0 +1,15 @@
+//
+//  SA_PrefixHeader.pch
+//  StockAssistant
+//
+//  Created by 周鑫 on 2018/12/10.
+//  Copyright © 2018 TJ. All rights reserved.
+//
+
+#ifndef SA_PrefixHeader_pch
+#define SA_PrefixHeader_pch
+
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+
+#endif /* SA_PrefixHeader_pch */

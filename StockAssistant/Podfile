@@ -1,0 +1,22 @@
+platform :ios, '9.0'  # 指定平台与版本
+inhibit_all_warnings!  # 全局禁止显示警告
+target 'StockAssistant' do
+
+pod 'Masonry'
+
+pod 'MJExtension'
+pod 'FSCalendar'
+pod 'IQKeyboardManager'
+pod 'AFNetworking'
+pod 'MBProgressHUD'
+pod 'MJRefresh'
+pod 'SDWebImage'
+#pod 'HXWeiboPhotoPicker', '~> 2.1.4'
+pod 'TYAttributedLabel'
+#pod 'YYCategories'
+pod 'JKCategories'
+pod 'WMPageController'
+pod 'DZNEmptyDataSet'
+pod 'JPush'
+pod 'SDCycleScrollView'
+end
