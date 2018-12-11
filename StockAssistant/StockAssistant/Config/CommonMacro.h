@@ -137,5 +137,7 @@
 
 
 
-
+#define DEFAULTS [NSUserDefaults standardUserDefaults]
+#define kPushViewController(VC)     [self.navigationController pushViewController:VC animated:YES]
+#define KMainColor RGB(42,175,246)
 #endif /* CommonMacro_h */
