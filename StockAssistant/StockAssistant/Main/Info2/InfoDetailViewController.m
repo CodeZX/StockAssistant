@@ -73,16 +73,29 @@
         [self.view addSubview:agreeview];
     }
     
+    [self setLoad];
+    
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
+- (void)setLoad {
     
-    self.navImageView.frame = CGRectMake(0, kStatusHeight, kScreenWidth, kNavBarHeight);
-    self.contentContainer.frame = CGRectMake(0, CGRectGetMaxY(self.navImageView.frame), kScreenWidth, kScreenHeight-CGRectGetMaxY(self.navImageView.frame)-44 - kExtendedHeightAtIphoneXBottom);
-    self.bgView.frame = CGRectMake(0, kScreenHeight-44-kExtendedHeightAtIphoneXBottom, kScreenWidth, 44+kExtendedHeightAtIphoneXBottom);
-    self.hintLabel.frame = CGRectMake(0, CGRectGetMaxY(self.navImageView.frame), kScreenWidth, 40);
+    [MBProgressHUD showMessage:@"加载中..."];
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    NSDictionary *dic = @{@"m_id":@(self.infoModel.iId)};
+    [manager GET:@"http://149.28.12.15:8080/gp/manual/get_one" parameters:dic progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        
+        [MBProgressHUD hideHUD];
+        if ([responseObject[@"code"] intValue] == 200) {
+            NSDictionary * retDataDic = responseObject[@"retData"];
+            self.infoModel.content = retDataDic[@"content"];
+            [self setContent];
+        }
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [MBProgressHUD hideHUD];
+    }];
+}
+
+- (void)setContent {
     
     ///* 设置内容 *///
     UILabel* titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, self.contentContainer.bounds.size.width-20, 50)];
@@ -141,6 +154,18 @@
     [self.contentContainer addSubview:complaintsBtn];
     
     self.contentContainer.contentSize = CGSizeMake(self.contentContainer.bounds.size.width, CGRectGetMaxY(complaintsBtn.frame)+20);
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    self.navImageView.frame = CGRectMake(0, kStatusHeight, kScreenWidth, kNavBarHeight);
+    self.contentContainer.frame = CGRectMake(0, CGRectGetMaxY(self.navImageView.frame), kScreenWidth, kScreenHeight-CGRectGetMaxY(self.navImageView.frame)-44 - kExtendedHeightAtIphoneXBottom);
+    self.bgView.frame = CGRectMake(0, kScreenHeight-44-kExtendedHeightAtIphoneXBottom, kScreenWidth, 44+kExtendedHeightAtIphoneXBottom);
+    self.hintLabel.frame = CGRectMake(0, CGRectGetMaxY(self.navImageView.frame), kScreenWidth, 40);
+    
+   
 }
 
 - (void)viewDidAppear:(BOOL)animated

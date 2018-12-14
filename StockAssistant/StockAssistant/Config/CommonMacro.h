@@ -140,4 +140,7 @@
 #define DEFAULTS [NSUserDefaults standardUserDefaults]
 #define kPushViewController(VC)     [self.navigationController pushViewController:VC animated:YES]
 #define KMainColor RGB(42,175,246)
+
+
+#define ServerURL(xx)   [NSString stringWithFormat:@"%@/%@",@"149.28.12.15",xx]
 #endif /* CommonMacro_h */

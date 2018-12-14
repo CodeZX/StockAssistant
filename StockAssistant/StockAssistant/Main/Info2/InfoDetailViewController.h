@@ -11,6 +11,6 @@
 
 @interface InfoDetailViewController : UIViewController
 
-@property(nonatomic, strong)InfoModel* infoModel;
+@property(nonatomic, strong)InfoModel * infoModel;
 
 @end

@@ -151,14 +151,39 @@
 // 登录接口
 - (void)JY_loginNetWorking {
     
-    [NetManager POSTloginPhone:self.phoneTextField.text pwd:self.passwordTextField.text completionHandler:^(JYLoginItem *essences, NSError *error) {
-        
-        [self.view showMessage:essences.msg];
-        
-        if ([essences.code isEqualToString:@"0"]) {
-            [JFSaveTool setObject:essences.retData.user_id forKey:@"UserID"];  //张诗磊服务器返回的ID
-            [self createUser];
+//    [NetManager POSTloginPhone:self.phoneTextField.text pwd:self.passwordTextField.text completionHandler:^(JYLoginItem *essences, NSError *error) {
+//
+//        [self.view showMessage:essences.msg];
+//
+//        if ([essences.code isEqualToString:@"0"]) {
+//            [JFSaveTool setObject:essences.retData.user_id forKey:@"UserID"];  //张诗磊服务器返回的ID
+//            [self createUser];
+//        }
+//    }];
+    
+    
+    [MBProgressHUD showMessage:@"登录中.."];
+    AFHTTPSessionManager *manager  = [AFHTTPSessionManager manager];
+    NSDictionary *dic = @{@"phone":self.phoneTextField.text,@"pwd":self.passwordTextField.text};
+    [manager POST:@"http://149.28.12.15:8080/gp/user/login" parameters:dic progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [MBProgressHUD hideHUD];
+        if (NSDictionaryMatchAndCount(responseObject)) {
+            NSDictionary *resDic = (NSDictionary *)responseObject;
+            int state = [NonEmptyString(resDic[@"code"]) intValue];
+            if ( state == 200 ) {
+                if (resDic[@"retData"]) {
+                    [DEFAULTS setObject:resDic[@"retData"] forKey:@"UserID"];
+//                     [self.view showMessage:@"登录成功!"];
+                    AppDelegate *app = (AppDelegate *)[UIApplication sharedApplication].delegate;
+                    [app setLogin];
+                }
+
+
+            }
         }
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+//        [self.view showMessage:[error localizedDescription]];
+        TJLog(@"zxzxzxzx%@",[error localizedDescription]);
     }];
 }
 

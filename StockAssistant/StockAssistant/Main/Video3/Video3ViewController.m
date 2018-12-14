@@ -19,6 +19,7 @@
 #import "JYUserAgreementView.h"
 #import "RCDCommonDefine.h"
 //#import "Const.h"
+#import "SA_VideoModel.h"
 
 //#import "MoLocationManager.h"
 
@@ -80,23 +81,31 @@
     self.view.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:self.navImageView1];
     [self.view addSubview:self.tableView];
-    
+    self.title = @"视频";
     self.pageNum = 1;
-    self.navImageView1.frame = CGRectMake(0, kStatusHeight, kScreenWidth, kNavBarHeight);
+//    self.navImageView1.frame = CGRectMake(0, kStatusHeight, kScreenWidth, kNavBarHeight);
     self.tableView.frame = CGRectMake(0, CGRectGetMaxY(self.navImageView1.frame), kScreenWidth, kScreenHeight-kStatusAndNavBarHeight);
     
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
     
     [self requestVideos];
     
-    if ([DEFAULTS objectForKey:@"ISFirst"] == nil) {
-        
-        JYUserAgreementView * agreeview = [JYUserAgreementView userAgreementView];
-        agreeview.frame = CGRectMake(0, 0, DEVICE_SCREEN_WIDTH, DEVICE_SCREEN_HEIGHT);
-        
-        [self.view addSubview:agreeview];
-    }
+//    if ([DEFAULTS objectForKey:@"ISFirst"] == nil) {
+//        
+//        JYUserAgreementView * agreeview = [JYUserAgreementView userAgreementView];
+//        agreeview.frame = CGRectMake(0, 0, DEVICE_SCREEN_WIDTH, DEVICE_SCREEN_HEIGHT);
+//        
+//        [self.view addSubview:agreeview];
+//    }
     
+    
+    
+    UILabel *titlelabel = [[UILabel alloc]init];
+    titlelabel.text = @"视频";
+    titlelabel.backgroundColor = [UIColor whiteColor];
+    titlelabel.textAlignment = NSTextAlignmentCenter;
+    titlelabel.frame =  self.navImageView1.frame;
+    [self.navImageView1 insertSubview:titlelabel atIndex:0];
     
 }
 
@@ -125,48 +134,70 @@
 
 - (void)requestVideos
 {
-    NSDictionary *dic = @{@"size":@(10), @"pageNum":@(_pageNum)};
-    NSString* getApi = @"http://568tj.cn:8080/news/video/getbysize";
+//    NSDictionary *dic = @{@"size":@(10), @"pageNum":@(_pageNum)};
+//    NSString* getApi = @"http://568tj.cn:8080/news/video/getbysize";
+//
+//    //1.创建会话管理者
+//    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+//
+//    manager.requestSerializer = [AFJSONRequestSerializer serializer];
+//    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+//    manager.responseSerializer.acceptableContentTypes = [NSSet setWithArray:@[@"application/json", @"text/json", @"text/javascript",@"text/html", @"text/plain",@"application/atom+xml",@"application/xml",@"text/xml", @"image/*"]];
+//
+//    [manager GET:getApi parameters:dic progress:^(NSProgress * _Nonnull downloadProgress) {
+//
+//    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+//
+//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//            if ([self.tableView respondsToSelector:@selector(mj_footer)]) {
+//                if ((self.tableView.mj_footer.isRefreshing == YES)) {
+//                    [self.tableView.mj_footer endRefreshing];
+//                }
+//            }
+//        });
+//
+//        self->_pageNum++;
+//        NSDictionary* dic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil];
+//        //NSLog(@"dic:%@", dic);
+//        if ([dic[@"code"] integerValue] == 200) {
+//            NSArray* array = dic[@"result"];
+//            for (NSDictionary* d in array) {
+//                VideoModel* model = [[VideoModel alloc] initWithDic:d];
+//                 [self.todayPlayArray addObject:model];
+//            }
+//            [self.tableView reloadData];
+//        }
+//    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//            if ([self.tableView respondsToSelector:@selector(mj_footer)]) {
+//                if ((self.tableView.mj_footer.isRefreshing == YES)) {
+//                    [self.tableView.mj_footer endRefreshing];
+//                }
+//            }
+//        });
+//    }];
     
-    //1.创建会话管理者
-    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     
-    manager.requestSerializer = [AFJSONRequestSerializer serializer];
-    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
-    manager.responseSerializer.acceptableContentTypes = [NSSet setWithArray:@[@"application/json", @"text/json", @"text/javascript",@"text/html", @"text/plain",@"application/atom+xml",@"application/xml",@"text/xml", @"image/*"]];
-    
-    [manager GET:getApi parameters:dic progress:^(NSProgress * _Nonnull downloadProgress) {
+    [MBProgressHUD showMessage:@"加载中.."];
+    AFHTTPSessionManager *manager  = [AFHTTPSessionManager manager];
+    [manager GET:@"http://149.28.12.15:8080/gp/video/get" parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         
-    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            if ([self.tableView respondsToSelector:@selector(mj_footer)]) {
-                if ((self.tableView.mj_footer.isRefreshing == YES)) {
-                    [self.tableView.mj_footer endRefreshing];
-                }
-            }
-        });
-        
-        self->_pageNum++;
-        NSDictionary* dic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil];
-        //NSLog(@"dic:%@", dic);
-        if ([dic[@"code"] integerValue] == 200) {
-            NSArray* array = dic[@"result"];
-            for (NSDictionary* d in array) {
-                VideoModel* model = [[VideoModel alloc] initWithDic:d];
-                 [self.todayPlayArray addObject:model];
-            }
+        [MBProgressHUD hideHUD];
+        if ([responseObject[@"code"] intValue] == 200) {
+            
+            NSMutableArray *array = [SA_VideoModel mj_objectArrayWithKeyValuesArray:responseObject[@"retData"]];
+            [self.todayPlayArray addObjectsFromArray:array];
             [self.tableView reloadData];
         }
+        
+        
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            if ([self.tableView respondsToSelector:@selector(mj_footer)]) {
-                if ((self.tableView.mj_footer.isRefreshing == YES)) {
-                    [self.tableView.mj_footer endRefreshing];
-                }
-            }
-        });
+        [MBProgressHUD hideHUD];
+        [MBProgressHUD showSuccess:@"加载失败！"];
     }];
+    
+    
+    
 }
 
 //- (void)requestWeather
@@ -264,7 +295,16 @@
         cell = [[Video3TableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellId];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
-    VideoModel* vModel = self.todayPlayArray[indexPath.row];
+    
+    SA_VideoModel *model = self.todayPlayArray[indexPath.row];
+    VideoModel* vModel = [[VideoModel alloc]init];
+    vModel.vId = [model.v_id integerValue];
+    vModel.urlString = model.url;
+    vModel.playPath = model.url;
+    vModel.title = model.name;
+    vModel.content = model.name;
+    vModel.synopsisPic = model.img;
+    
     cell.coverPath = vModel.synopsisPic;
     cell.videoTitle = vModel.title;
     cell.readNumber = vModel.popularity;
@@ -273,26 +313,26 @@
     __block Video3TableViewCell *weakCell = cell;
     __weak typeof(self)  weakSelf          = self;
     // 点击播放的回调
-    cell.playBlock = ^(UIButton *btn){
-        
-        ZFPlayerModel *playerModel = [[ZFPlayerModel alloc] init];
-        playerModel.title            = vModel.title;
-        playerModel.videoURL         = [NSURL URLWithString:vModel.playPath];
-        playerModel.placeholderImage = [UIImage imageNamed:@"ZFPlayer.bundle/ZFPlayer_loading_bgView.png"];
-        //playerModel.placeholderImageURLString = vModel.synopsisPic;
-        playerModel.scrollView       = weakSelf.tableView;
-        playerModel.indexPath        = weakIndexPath;
-        // 赋值分辨率字典
-        //playerModel.resolutionDic    = dic;
-        // player的父视图tag
-        playerModel.fatherViewTag    = weakCell.picView.tag;
+//    cell.playBlock = ^(UIButton *btn){
+    
+//        ZFPlayerModel *playerModel = [[ZFPlayerModel alloc] init];
+//        playerModel.title            = vModel.title;
+//        playerModel.videoURL         = [NSURL URLWithString:vModel.playPath];
+//        playerModel.placeholderImage = [UIImage imageNamed:@"ZFPlayer.bundle/ZFPlayer_loading_bgView.png"];
+//        //playerModel.placeholderImageURLString = vModel.synopsisPic;
+//        playerModel.scrollView       = weakSelf.tableView;
+//        playerModel.indexPath        = weakIndexPath;
+//        // 赋值分辨率字典
+//        //playerModel.resolutionDic    = dic;
+//        // player的父视图tag
+//        playerModel.fatherViewTag    = weakCell.picView.tag;
         
 //        // 设置播放控制层和model
 //        [weakSelf.playerView playerControlView:nil playerModel:playerModel];
 //
 //        // 自动播放
 //        [weakSelf.playerView autoPlayTheVideo];
-    };
+//    };
     
     [cell hidePlayButton:YES];
 
@@ -306,10 +346,18 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    VideoModel* videoModel = self.todayPlayArray[indexPath.row];
+    
+    SA_VideoModel *model = self.todayPlayArray[indexPath.row];
+    VideoModel* vModel = [[VideoModel alloc]init];
+    vModel.vId = [model.v_id integerValue];
+    vModel.urlString = model.url;
+    vModel.playPath = model.url;
+    vModel.title = model.name;
+    vModel.content = model.name;
+    vModel.synopsisPic = model.img;
 
     VideoPlay3ViewController* playVC = [[VideoPlay3ViewController alloc] init];
-    playVC.videoModel = videoModel;
+    playVC.videoModel = vModel;
     playVC.contentType = @"video";
     [self presentViewController:playVC animated:YES completion:^{
 
@@ -490,6 +538,7 @@
     if (!_navImageView1) {
         _navImageView1 = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bar2"]];
         _navImageView1.contentMode = UIViewContentModeScaleAspectFill;
+        
     }
     return _navImageView1;
 }

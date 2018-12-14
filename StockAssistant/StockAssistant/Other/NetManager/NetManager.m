@@ -12,10 +12,10 @@
 @implementation NetManager
 
 //注册
-+ (id)POSTRegisterPhone:(NSString *)phone pwd:(NSString *)pwd completionHandler:(void(^)(JYRegisterItem *essences, NSError *error))completionHandler {
-    NSString *path = @"http://host-119-148-162-231.iphost.gotonets.com:8080/tj_diary/user/register";
++ (id)POSTRegisterPhone:(NSString *)phone pwd:(NSString *)pwd code:(NSString *)code completionHandler:(void(^)(JYRegisterItem *essences, NSError *error))completionHandler {
+    NSString *path = @"http://192.168.71.55:8080/gp/user/register";
     
-    NSDictionary * param = @{@"phone_num":phone,@"pwd":pwd};
+    NSDictionary * param = @{@"phone_num":phone,@"pwd":pwd,@"code":code};
     return [self POST:path param:param completionHandler:^(id obj, NSError *error) {
         !completionHandler ?: completionHandler([JYRegisterItem Parse:obj], error);
     }];
@@ -28,6 +28,16 @@
     NSDictionary * param = @{@"phone_num":phone,@"pwd":pwd};
     return [self POST:path param:param completionHandler:^(id obj, NSError *error) {
         !completionHandler ?: completionHandler([JYLoginItem Parse:obj], error);
+    }];
+}
+
+// 获取验证码
++ (id)POSTPhoneCode:(NSString *)phone  code:(NSString *)code completionHandler:(void(^)(JYRegisterItem *essences, NSError *error))completionHandler {
+    NSString *path = @"http://192.168.71.55:8080/gp/user/register";
+    
+    NSDictionary * param = @{@"phone_num":phone,@"code":code};
+    return [self POST:path param:param completionHandler:^(id obj, NSError *error) {
+        !completionHandler ?: completionHandler([JYRegisterItem Parse:obj], error);
     }];
 }
 //
@@ -115,11 +125,11 @@
 //社区所有帖子
 + (id)GETAllCommunityID:(NSString *)ID completionHandler:(void(^)(JYCommunity *allCommunity, NSError *error))completionHandler {
     
-    NSString *path = @"http://host-119-148-162-231.iphost.gotonets.com:8080/tj_diary/card/show";
+    NSString *path = @"http://149.28.12.15:8080/gp/post/list_all";
     
-    NSDictionary * param = @{@"user_id":ID};
+//    NSDictionary * param = @{@"user_id":ID};
 
-    return [self GET:path param:param completionHandler:^(id obj, NSError *error) {
+    return [self GET:path param:nil completionHandler:^(id obj, NSError *error) {
         !completionHandler ?: completionHandler([JYCommunity Parse:obj], error);
     }];
 }
@@ -162,7 +172,7 @@
 
 //发帖
 + (id)POSTUploadUserId:(NSString *)userId title:(NSString *)title text:(NSString *)text pic:(NSString *)pic completionHandler:(void(^)(JYRegisterItem *allCommunity, NSError *error))completionHandler {
-    NSString *path = @"http://host-119-148-162-231.iphost.gotonets.com:8080/tj_diary/card/upload";
+    NSString *path = @"http://192.168.71.55:8080/gp/post/publish";
     NSDictionary * param = @{@"user_id":userId,@"title":title,@"text":text,@"pic":pic};
     return [self POST:path param:param completionHandler:^(id obj, NSError *error) {
         !completionHandler ?: completionHandler([JYRegisterItem Parse:obj], error);
@@ -182,8 +192,8 @@
 
 //展示单个帖子的所有评论
 + (id)POSTShowCommentCardId:(NSString *)cardID completionHandler:(void(^)(JYCommentItem *allCommunity, NSError *error))completionHandler {
-    NSString *path = @"http://host-219-235-5-8.iphost.gotonets.com:8080/tj_news/comments/show";
-    NSDictionary * param = @{@"card_id":cardID};
+    NSString *path = @"http://192.168.71.55:8080/gp/post/list_comment";
+    NSDictionary * param = @{@"post_id":cardID};
     return [self POST:path param:param completionHandler:^(id obj, NSError *error) {
         !completionHandler ?: completionHandler([JYCommentItem Parse:obj], error);
     }];

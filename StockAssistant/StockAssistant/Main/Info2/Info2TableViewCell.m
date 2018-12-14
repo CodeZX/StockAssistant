@@ -8,6 +8,8 @@
 
 #import "Info2TableViewCell.h"
 #import "UIImageView+WebCache.h"
+#import "SA_VideoModel.h"
+#import "SA_NewsModel.h"
 
 @interface Info2TableViewCell()
 
@@ -78,10 +80,34 @@
 {
     _infoModel = infoModel;
     
-    [_coverImageView sd_setImageWithURL:[NSURL URLWithString:_infoModel.synopsisPic] placeholderImage:nil];
+    [_coverImageView sd_setImageWithURL:[NSURL URLWithString:@"http://img.mms.v1.cn/static/mms/images/2018-12-11/201812110919582371.jpg"] placeholderImage:nil];
+//    NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:@"http://img.mms.v1.cn/static/mms/images/2018-12-11/201812110919582371.jpg"]];
+//                     [_coverImageView setImage:[UIImage imageWithData:data]];
     [_titLabel setText:_infoModel.title];
     [_playCountLabel setText:[NSString stringWithFormat:@"%ld 人阅读", _infoModel.readNumber]];
     [_timeLabel setText:_infoModel.date];
+    
+//    _coverImageView.backgroundColor = [UIColor greenColor];
+}
+
+- (void)setVideoModel:(SA_VideoModel *)videoModel {
+    
+    _videoModel = videoModel;
+    
+    
+    [self.coverImageView sd_setImageWithURL:[NSURL URLWithString:videoModel.img] placeholderImage:nil];
+//    self.coverImageView.backgroundColor = [UIColor lightGrayColor];
+    [self.titLabel setText:videoModel.name];
+//    [self.]
+    
+    
+}
+
+- (void)setNewsModel:(SA_NewsModel *)newsModel {
+    
+    _newsModel = newsModel;
+    [self.titLabel setText:newsModel.name];
+     [self.coverImageView sd_setImageWithURL:[NSURL URLWithString:newsModel.img] placeholderImage:nil];
 }
 
 - (UIImageView *)coverImageView

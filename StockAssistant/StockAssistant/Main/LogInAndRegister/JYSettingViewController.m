@@ -11,6 +11,7 @@
 #import "Masonry.h"
 //#import "Const.h"
 #import "JFSaveTool.h"
+#import <JMessage/JMessage.h>
 
 #define kScreenWidth  [UIScreen mainScreen].bounds.size.width
 #define kScreenHeight [UIScreen mainScreen].bounds.size.height
@@ -61,11 +62,25 @@
 
 - (void)logoutButtonAction {
     
-    [JFSaveTool setObject:@"" forKey:@"UserID"];
-    [JFSaveTool setObject:@"" forKey:@"UserNameKey"];
-    [JFSaveTool setObject:@"" forKey:@"UserImageUrlKey"];
-    [JFSaveTool setObject:@"" forKey:@"PhoneNumberKey"];
-    [self dismissViewControllerAnimated:YES completion:nil];
+    
+    //退出当前登录的用户
+    [JMSGUser logout:^(id resultObject, NSError *error) {
+        if (!error) {
+            //退出登录成功
+            [JFSaveTool setObject:@"" forKey:@"UserID"];
+            [JFSaveTool setObject:@"" forKey:@"UserNameKey"];
+            [JFSaveTool setObject:@"" forKey:@"UserImageUrlKey"];
+            [JFSaveTool setObject:@"" forKey:@"PhoneNumberKey"];
+//            [self dismissViewControllerAnimated:YES completion:nil];
+            AppDelegate *app = (AppDelegate *)[UIApplication sharedApplication].delegate;
+            [app setLogOut];
+        } else {
+            //退出登录失败
+        }
+    }];
+   
+    
+    
 }
 
 - (void)backButtonAction

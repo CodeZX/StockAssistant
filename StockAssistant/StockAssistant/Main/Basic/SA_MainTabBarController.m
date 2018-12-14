@@ -12,7 +12,8 @@
 #import "SA_HomeViewController.h"
 #import "SA_UserCenterViewController.h"
 #import "Video3ViewController.h"
-#import "RCDSquareTableViewController.h"
+#import "SA_ChatRoomViewController.h"
+//#import "RCDSquareTableViewController.h"
 
 @interface SA_MainTabBarController ()
 
@@ -25,6 +26,8 @@
     
     [self addAllChildVC];
     
+    [self.tabBar setTintColor:[UIColor orangeColor]];
+    
 }
 
 - (void)addAllChildVC {
@@ -36,7 +39,7 @@
     Video3ViewController* videoVC = [[Video3ViewController alloc] init];
     videoVC.tabBarItem = [[UITabBarItem alloc] initWithTitle:@"视频" image:[UIImage imageNamed:@"icon_video_nor"] selectedImage:[UIImage imageNamed:@"icon_video_pre"]];
 //
-    RCDSquareTableViewController *squareVC = [[RCDSquareTableViewController alloc] init];
+    SA_ChatRoomViewController *squareVC = [[SA_ChatRoomViewController alloc] init];
     squareVC.tabBarItem = [[UITabBarItem alloc] initWithTitle:@"聊天室" image:[UIImage imageNamed:@"icon_community_nor"] selectedImage:[UIImage imageNamed:@"icon_community_pre"]];
     SA_MainNavigationController* squareNC = [[SA_MainNavigationController alloc] initWithRootViewController:squareVC];
 //

@@ -21,6 +21,7 @@
 //#import "Const.h"
 #import "UIScrollView+Refresh.h"
 #import "JYLoginViewController.h"
+#import "AFNetworking.h"
 
 static NSString * const kCellIdentifier = @"ASKCell.identifier";
 static NSString * pageNum = @"20";
@@ -121,8 +122,8 @@ static NSString * pageNum = @"20";
     vc.title = @"评论详情";
     JYCommunity_retData * item = self.dataArray[indexPath.row];
     
-    vc.card_id = item.card_id;
-    
+//    vc.card_id = item.card_id;
+    vc.card_id = item.post_id;
     vc.isPraise = item.is_like;
     vc.iconImageURL = item.user_pic;
     vc.content = item.title;
@@ -245,13 +246,41 @@ static NSString * pageNum = @"20";
                 [self.tableView dong_endFooterRefresh];
             }];
         }else {
+            [MBProgressHUD showMessage:@"加载中.."];
             [NetManager GETAllCommunityID:[JFSaveTool objectForKey:@"UserID"] completionHandler:^(JYCommunity *allCommunity, NSError *error) {
+                [MBProgressHUD hideHUD];
+                [self.tableView.mj_header endRefreshing];
                 self.dataArray = allCommunity.retData ;
                 [self.tableView reloadData];
                 [self.tableView dong_endHeaderRefresh];
                 [self.tableView dong_endFooterRefresh];
+//                if (error) {
+//                    [MBProgressHUD showSuccess:@"加载失败..."];
+//                }else {
+//
+//                }
+
             }];
         }
+//
+    
+//    [MBProgressHUD showMessage:@"加载中...111"];
+//    AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc]init];
+//    [manager GET:@"http://149.28.12.15:8080/gp/post/list_all" parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+//        [MBProgressHUD hideHUD];
+//        if ([responseObject[@"code"] integerValue] == 200) {
+//
+////            self.dataArray = [
+//        }
+//
+//
+//    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+//
+//        TJLog(@"zxzxzxzx%@",[error localizedDescription]);
+//        TJLog(@"zxzxzxzx%@",[error localizedDescription]);
+//    }];
+    
+    
     
 
 }

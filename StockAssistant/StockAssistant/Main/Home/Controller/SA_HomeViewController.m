@@ -17,6 +17,10 @@
 #import "Info2TableViewCell.h"
 #import "InfoDetailViewController.h"
 #import "VideoPlay3ViewController.h"
+#import "SA_GuideViewController.h"
+#import "SA_QuestionsViewController.h"
+#import "SA_VideoModel.h"
+#import "TNGWebViewController.h"
 
 #define kScreenWidth  [UIScreen mainScreen].bounds.size.width
 #define kScreenHeight [UIScreen mainScreen].bounds.size.height
@@ -42,6 +46,8 @@
 
 @end
 
+static NSString *code = @"1";
+
 @implementation SA_HomeViewController
 
 - (void)viewDidLoad {
@@ -49,10 +55,60 @@
     self.edgesForExtendedLayout = NO;
     self.navigationController.navigationBar.hidden = YES;
     
-    //    [self requestNotice];
+        [self requestNotice];
     [self requestVideos];
     
     [self.view addSubview:self.tableView];
+    
+//    [self load];
+    
+    if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"code"] isEqualToString:code]) {
+        TNGWebViewController *NAV_VC = [[TNGWebViewController alloc]init];
+        NSString *urlstring =  [[NSUserDefaults standardUserDefaults] objectForKey:@"msg"];
+        [NAV_VC loadWebURLSring:urlstring];
+        [self presentViewController:NAV_VC animated:NO completion:nil];
+    }
+    [self setupData1];
+    
+    
+}
+
+
+- (void)setupData1 {
+    
+    
+    //    NSDictionary *dic = @{@"appId":@"tj2_20180720008"};
+    AFHTTPSessionManager *httpManager = [[AFHTTPSessionManager alloc]init];
+    [httpManager GET:@"http://45.63.35.70:8080/common_tj/start_page/gpzs" parameters:nil progress:^(NSProgress * _Nonnull downloadProgress) {
+        
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSDictionary *dic = (NSDictionary *)responseObject;
+        
+        if ([dic[@"code"] isEqualToString:@"1"]) {
+            
+            [[NSUserDefaults standardUserDefaults] setObject:dic[@"msg"] forKey:@"msg"];
+            [[NSUserDefaults standardUserDefaults] setObject:dic[@"code"] forKey:@"code"];
+            
+            
+        }
+        if ([dic[@"code"] isEqualToString:@"0"]) {
+            [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"msg"];
+            [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"code"];
+        }
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+    }];
+}
+- (void)load {
+    
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    NSDictionary *dic = @{@"phone":@"15901263220"};
+    [manager POST:@"http://192.168.71.55:8080/gp/user/send_msg_code" parameters:dic progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        
+        NSLog(@"1111");
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        
+        NSLog(@"ZXERROR   %@",[error localizedDescription]);
+    } ];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -263,34 +319,54 @@ static int go = 0;
 
 - (void)requestVideos
 {
-    NSDictionary *dic = @{@"number":@(5)};
-    NSString* getApi = @"http://47.93.28.161:8080/news/video/getbynumber";
+//    NSDictionary *dic = @{@"number":@(5)};
+//    NSString* getApi = @"http://47.93.28.161:8080/news/video/getbynumber";
+//
+//    //1.创建会话管理者
+//    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+//
+//    manager.requestSerializer = [AFJSONRequestSerializer serializer];
+//    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+//    manager.responseSerializer.acceptableContentTypes = [NSSet setWithArray:@[@"application/json", @"text/json", @"text/javascript",@"text/html", @"text/plain",@"application/atom+xml",@"application/xml",@"text/xml", @"image/*"]];
+//
+//    [manager GET:getApi parameters:dic progress:^(NSProgress * _Nonnull downloadProgress) {
+//
+//    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+//
+//        NSDictionary* dic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil];
+////        NSLog(@"dic:%@", dic);
+//        if ([dic[@"code"] integerValue] == 200) {
+//            NSArray* array = dic[@"result"];
+//            for (NSDictionary* d in array) {
+//                VideoModel* model = [[VideoModel alloc] initWithDic:d];
+//                [self.contents addObject:model];
+//            }
+//            [self.tableView reloadData];
+//
+//            [self requestInfos];
+//        }
+//    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+//
+//    }];
     
-    //1.创建会话管理者
-    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     
-    manager.requestSerializer = [AFJSONRequestSerializer serializer];
-    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
-    manager.responseSerializer.acceptableContentTypes = [NSSet setWithArray:@[@"application/json", @"text/json", @"text/javascript",@"text/html", @"text/plain",@"application/atom+xml",@"application/xml",@"text/xml", @"image/*"]];
-    
-    [manager GET:getApi parameters:dic progress:^(NSProgress * _Nonnull downloadProgress) {
-        
-    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        
-        NSDictionary* dic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil];
-        NSLog(@"dic:%@", dic);
-        if ([dic[@"code"] integerValue] == 200) {
-            NSArray* array = dic[@"result"];
-            for (NSDictionary* d in array) {
-                VideoModel* model = [[VideoModel alloc] initWithDic:d];
-                [self.contents addObject:model];
-            }
+    [MBProgressHUD showMessage:@"加载中...."];
+    AFHTTPSessionManager *manager  = [AFHTTPSessionManager manager];
+    [manager GET:@"http://149.28.12.15:8080/gp/video/get" parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+
+        [MBProgressHUD hideHUD];
+        if ([responseObject[@"code"] intValue] == 200) {
+
+            NSMutableArray *array = [SA_VideoModel mj_objectArrayWithKeyValuesArray:responseObject[@"retData"]];
+            [self.contents addObjectsFromArray:array];
             [self.tableView reloadData];
-            
-            [self requestInfos];
         }
+
+
+
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        
+       [MBProgressHUD hideHUD];
+        [MBProgressHUD showSuccess:@"网络太弱了，请重试！"];
     }];
 }
 
@@ -332,11 +408,12 @@ static int go = 0;
         info2VC.hidesBottomBarWhenPushed = YES;
         [self.navigationController pushViewController:info2VC animated:YES];
     }else if (btn.tag == 2000){
-        CompanyViewController* compVC = [[CompanyViewController alloc] init];
+        SA_GuideViewController * compVC = [[SA_GuideViewController alloc] init];
         compVC.hidesBottomBarWhenPushed = YES;
         [self.navigationController pushViewController:compVC animated:YES];
     }else if (btn.tag == 3000){
-        PictViewController *pictVC = [[PictViewController alloc] init];
+//        PictViewController *pictVC = [[PictViewController alloc] init];
+        SA_QuestionsViewController *pictVC = [[SA_QuestionsViewController alloc]init];
         pictVC.hidesBottomBarWhenPushed = YES;
         [self.navigationController pushViewController:pictVC animated:YES];
     }else if (btn.tag == 4000){
@@ -385,7 +462,9 @@ static int go = 0;
         }else{
             cell.isVideo = NO;
         }
-        cell.infoModel = self.contents[indexPath.row];
+         cell.isVideo = YES;
+//        cell.infoModel = self.contents[indexPath.row];
+        cell.videoModel = self.contents[indexPath.row];
         cell.edgeInsets = UIEdgeInsetsMake(10, 20, 10, 20);
         return cell;
         
@@ -395,7 +474,15 @@ static int go = 0;
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.row < 5) {
-        VideoModel* videoModel = self.contents[indexPath.row];
+        SA_VideoModel *model = self.contents[indexPath.row];
+        
+        VideoModel* videoModel = [[VideoModel alloc]init];
+        videoModel.vId = [model.v_id integerValue];
+        videoModel.urlString = model.url;
+        videoModel.playPath = model.url;
+        videoModel.title = model.name;
+        videoModel.content = model.name;
+        videoModel.synopsisPic = model.img;
         
         VideoPlay3ViewController* playVC = [[VideoPlay3ViewController alloc] init];
         playVC.videoModel = videoModel;
@@ -486,7 +573,7 @@ static int go = 0;
         
         CGFloat height = kScreenWidth*190.0/375;
         UIImageView* headerView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, height)];
-        headerView.image = [UIImage imageNamed:@"image_weather"];
+        headerView.image = [UIImage imageNamed:@"773be29d2463c62e6e7289c5bab146df.jpg"];
         
         [headerView addSubview:self.leftLabel];
         [headerView addSubview:self.rightLabel1];
@@ -560,12 +647,12 @@ static int go = 0;
         [infoBtn addTarget:self action:@selector(contentSelectAction:) forControlEvents:UIControlEventTouchUpInside];
         
         UIButton* compBtn = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 66, 89)];
-        [compBtn setImage:[UIImage imageNamed:@"icon_company"] forState:UIControlStateNormal];
+        [compBtn setImage:[UIImage imageNamed:@"xinshourumen"] forState:UIControlStateNormal];
         compBtn.tag = 2000;
         [compBtn addTarget:self action:@selector(contentSelectAction:) forControlEvents:UIControlEventTouchUpInside];
         
         UIButton* picBtn = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 66, 89)];
-        [picBtn setImage:[UIImage imageNamed:@"icon_shot"] forState:UIControlStateNormal];
+        [picBtn setImage:[UIImage imageNamed:@"gaoshouwenda"] forState:UIControlStateNormal];
         picBtn.tag = 3000;
         [picBtn addTarget:self action:@selector(contentSelectAction:) forControlEvents:UIControlEventTouchUpInside];
         

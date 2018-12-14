@@ -13,6 +13,9 @@
 #import "AFNetworking.h"
 #import "InfoModel.h"
 #import "MJRefresh.h"
+#import "SA_VideoModel.h"
+#import "VideoPlay3ViewController.h"
+#import "SA_VideoModel.h"
 
 #define kScreenWidth  [UIScreen mainScreen].bounds.size.width
 #define kScreenHeight [UIScreen mainScreen].bounds.size.height
@@ -44,6 +47,12 @@
     [self.view addSubview:self.navImageView1];
     [self.view addSubview:self.tableView];
     
+    UILabel *titlelabel = [[UILabel alloc]init];
+    titlelabel.text = @"热门资讯";
+    titlelabel.backgroundColor = [UIColor whiteColor];
+    titlelabel.textAlignment = NSTextAlignmentCenter;
+    titlelabel.frame =  self.navImageView1.frame;
+    [self.navImageView1 insertSubview:titlelabel atIndex:0];
     
     
     
@@ -65,48 +74,64 @@
 
 - (void)requestInfos
 {
-    NSDictionary *dic = @{@"size":@(10), @"pageNum":@(_pageNum)};
-    NSString* getApi = @"http://568tj.cn:8080/news/uav/getbysize";
+//    NSDictionary *dic = @{@"size":@(10), @"pageNum":@(_pageNum)};
+//    NSString* getApi = @"http://568tj.cn:8080/news/uav/getbysize";
+//
+//    //1.创建会话管理者
+//    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+//
+//    manager.requestSerializer = [AFJSONRequestSerializer serializer];
+//    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+//    manager.responseSerializer.acceptableContentTypes = [NSSet setWithArray:@[@"application/json", @"text/json", @"text/javascript",@"text/html", @"text/plain",@"application/atom+xml",@"application/xml",@"text/xml", @"image/*"]];
+//
+//    [manager GET:getApi parameters:dic progress:^(NSProgress * _Nonnull downloadProgress) {
+//
+//    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+//
+//
+//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//            if ([self.tableView respondsToSelector:@selector(mj_footer)]) {
+//                if ((self.tableView.mj_footer.isRefreshing == YES)) {
+//                    [self.tableView.mj_footer endRefreshing];
+//                }
+//            }
+//        });
+//
+//        self.pageNum++;
+//        NSDictionary* dic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil];
+//        NSLog(@"dic:%@", dic);
+//        if ([dic[@"code"] integerValue] == 200) {
+//            NSArray* array = dic[@"result"];
+//            for (NSDictionary* d in array) {
+//                InfoModel* model = [[InfoModel alloc] initWithDic:d];
+//                [self.todayPlayArray addObject:model];
+//            }
+//            [self.tableView reloadData];
+//        }
+//    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//            if ([self.tableView respondsToSelector:@selector(mj_footer)]) {
+//                if ((self.tableView.mj_footer.isRefreshing == YES)) {
+//                    [self.tableView.mj_footer endRefreshing];
+//                }
+//            }
+//        });
+//    }];
     
-    //1.创建会话管理者
-    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-    
-    manager.requestSerializer = [AFJSONRequestSerializer serializer];
-    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
-    manager.responseSerializer.acceptableContentTypes = [NSSet setWithArray:@[@"application/json", @"text/json", @"text/javascript",@"text/html", @"text/plain",@"application/atom+xml",@"application/xml",@"text/xml", @"image/*"]];
-    
-    [manager GET:getApi parameters:dic progress:^(NSProgress * _Nonnull downloadProgress) {
+    AFHTTPSessionManager *manager  = [AFHTTPSessionManager manager];
+    [manager GET:@"http://149.28.12.15:8080/gp/video/get" parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         
-    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        
-        
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            if ([self.tableView respondsToSelector:@selector(mj_footer)]) {
-                if ((self.tableView.mj_footer.isRefreshing == YES)) {
-                    [self.tableView.mj_footer endRefreshing];
-                }
-            }
-        });
-        
-        self.pageNum++;
-        NSDictionary* dic = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil];
-        NSLog(@"dic:%@", dic);
-        if ([dic[@"code"] integerValue] == 200) {
-            NSArray* array = dic[@"result"];
-            for (NSDictionary* d in array) {
-                InfoModel* model = [[InfoModel alloc] initWithDic:d];
-                [self.todayPlayArray addObject:model];
-            }
+        if ([responseObject[@"code"] intValue] == 200) {
+            
+            NSMutableArray *array = [SA_VideoModel mj_objectArrayWithKeyValuesArray:responseObject[@"retData"]];
+            [self.todayPlayArray addObjectsFromArray:array];
             [self.tableView reloadData];
         }
+        
+        
+        
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            if ([self.tableView respondsToSelector:@selector(mj_footer)]) {
-                if ((self.tableView.mj_footer.isRefreshing == YES)) {
-                    [self.tableView.mj_footer endRefreshing];
-                }
-            }
-        });
+        
     }];
 }
 
@@ -139,7 +164,8 @@
         cell = [[Info2TableViewCell alloc]  initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellId];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
-    cell.infoModel = self.todayPlayArray[indexPath.row];
+//    cell.infoModel = self.todayPlayArray[indexPath.row];
+    cell.videoModel = self.todayPlayArray[indexPath.row];
     cell.edgeInsets = UIEdgeInsetsMake(10, 20, 10, 20);
     return cell;
 }
@@ -151,14 +177,33 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    InfoModel* infoModel = nil;
-    infoModel = self.todayPlayArray[indexPath.row];
+//    InfoModel* infoModel = nil;
+//    infoModel = self.todayPlayArray[indexPath.row];
+//
+//
+//
+//
+//    InfoDetailViewController* vc = [[InfoDetailViewController alloc] init];
+//    vc.infoModel = infoModel;
+//    [self presentViewController:vc animated:YES completion:^{
+//
+//    }];
     
     
+    SA_VideoModel *model = self.todayPlayArray[indexPath.row];
     
-    InfoDetailViewController* vc = [[InfoDetailViewController alloc] init];
-    vc.infoModel = infoModel;
-    [self presentViewController:vc animated:YES completion:^{
+    VideoModel* videoModel = [[VideoModel alloc]init];
+    videoModel.vId = [model.v_id integerValue];
+    videoModel.urlString = model.url;
+    videoModel.playPath = model.url;
+    videoModel.title = model.name;
+    videoModel.content = model.name;
+    videoModel.synopsisPic = model.img;
+    
+    VideoPlay3ViewController* playVC = [[VideoPlay3ViewController alloc] init];
+    playVC.videoModel = videoModel;
+    playVC.contentType = @"video";
+    [self presentViewController:playVC animated:YES completion:^{
         
     }];
     

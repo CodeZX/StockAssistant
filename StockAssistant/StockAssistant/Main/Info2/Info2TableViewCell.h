@@ -9,10 +9,13 @@
 #import <UIKit/UIKit.h>
 #import "InfoModel.h"
 
+@class SA_VideoModel,SA_NewsModel;
 @interface Info2TableViewCell : UITableViewCell
 
 @property(nonatomic, strong)InfoModel* infoModel;
 @property(nonatomic, assign)UIEdgeInsets edgeInsets;
+@property (nonatomic,strong) SA_VideoModel *videoModel;
+@property (nonatomic,strong) SA_NewsModel *newsModel;
 
 @property(nonatomic, assign)BOOL isVideo;
 

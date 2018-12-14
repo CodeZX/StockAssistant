@@ -107,14 +107,30 @@
 //注册
 - (void)registerAction {
     
-    [NetManager POSTRegisterPhone:self.phoneTextField.text pwd:self.passwordTextField.text completionHandler:^(JYRegisterItem *essences, NSError *error) {
-        
-        [self.view showMessage:essences.msg];
-        
-        if ([essences.code isEqualToString:@"0"]) {
-            //[self.navigationController popViewControllerAnimated:YES];
-            [self dismissViewControllerAnimated:YES completion:nil];
+//
+//    [NetManager POSTRegisterPhone:self.phoneTextField.text pwd:self.passwordTextField.text code:self.registerTextField.text completionHandler:^(JYRegisterItem *essences, NSError *error) {
+//
+//        [self.view showMessage:essences.msg];
+//
+//        if ([essences.code isEqualToString:@"0"]) {
+//            //[self.navigationController popViewControllerAnimated:YES];
+//            [self dismissViewControllerAnimated:YES completion:nil];
+//        }
+//    }];
+    
+    
+    AFHTTPSessionManager *manager  = [AFHTTPSessionManager manager];
+    NSDictionary *dic = @{@"phone":self.phoneTextField.text,@"pwd":self.passwordTextField.text,@"code":self.registerTextField.text};
+    [manager POST:@"http://149.28.12.15/gp/user/register" parameters:dic progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        if (NSDictionaryMatchAndCount(responseObject)) {
+            NSDictionary *resDic = (NSDictionary *)responseObject;
+            int state = [NonEmptyString(resDic[@"code"]) intValue];
+            if ( state == 200 ) {
+                [self.view showMessage:@"注册成功!"];
+            }
         }
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self.view showMessage:@"注册失败!"];
     }];
 }
 
@@ -128,13 +144,14 @@
         [self.view showMessage:@"请输入正确的手机号码"];
         return;
     }
-    randNumber = arc4random()%899999+100000;
-    NSUserDefaults *randCode = [NSUserDefaults standardUserDefaults];
-    NSString *randStr = [NSString stringWithFormat:@"%d",randNumber];
-    [randCode setObject:randStr forKey:@"randCode"];
-    NSString * sms_content = [NSString stringWithFormat:@"%@是本次操作的手机验证码，如非本人操作，请忽略本短信。【天空资讯】",randStr];
-    NSLog(@"%@",sms_content);
-    NSDictionary *dic = @{@"msisdn":self.phoneTextField.text,@"sms_content":sms_content, @"client_ip":@"127.0.0.1", @"company_id":@"CP2017021701",@"sms_type":@"1",@"priority":@"1",@"pre_process_time":@"0"};
+//    randNumber = arc4random()%899999+100000;
+//    NSUserDefaults *randCode = [NSUserDefaults standardUserDefaults];
+//    NSString *randStr = [NSString stringWithFormat:@"%d",randNumber];
+//    [randCode setObject:randStr forKey:@"randCode"];
+//    NSString * sms_content = [NSString stringWithFormat:@"%@是本次操作的手机验证码，如非本人操作，请忽略本短信。【天空资讯】",randStr];
+//    NSLog(@"%@",sms_content);
+//    NSDictionary *dic = @{@"msisdn":self.phoneTextField.text,@"sms_content":sms_content, @"client_ip":@"127.0.0.1", @"company_id":@"CP2017021701",@"sms_type":@"1",@"priority":@"1",@"pre_process_time":@"0"};
+    NSDictionary *dic = @{@"phone":self.phoneTextField.text};
     [self phoneRecvNumberByParam:dic];
     [self sentPhoneCodeTimeMethod];
 }
@@ -181,18 +198,19 @@
 #pragma mark - 网络请求
 //获取验证码
 - (void)phoneRecvNumberByParam:(NSDictionary *)params{
+    
     AFHTTPSessionManager *manager = manager = [AFHTTPSessionManager manager];
-    manager.responseSerializer.acceptableContentTypes = [NSSet setWithArray:@[@"application/json",@"text/html",@"text/json",@"text/plain",@"text/javascript",@"text/xml",@"image/*"]];
-    manager.requestSerializer.stringEncoding = NSUTF8StringEncoding;
-    //https ipv6的设置
-    manager.securityPolicy = [AFSecurityPolicy defaultPolicy];
-    manager.securityPolicy.allowInvalidCertificates = YES;
-    manager.securityPolicy.validatesDomainName = NO;
-    [manager POST:@"http://smspay.api.365pays.cn/sms/send.do" parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+//    manager.responseSerializer.acceptableContentTypes = [NSSet setWithArray:@[@"application/json",@"text/html",@"text/json",@"text/plain",@"text/javascript",@"text/xml",@"image/*"]];
+//    manager.requestSerializer.stringEncoding = NSUTF8StringEncoding;
+//    //https ipv6的设置
+//    manager.securityPolicy = [AFSecurityPolicy defaultPolicy];
+//    manager.securityPolicy.allowInvalidCertificates = YES;
+//    manager.securityPolicy.validatesDomainName = NO;
+    [manager POST:@"http://149.28.12.15/gp/user/send_msg_code" parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         if (NSDictionaryMatchAndCount(responseObject)) {
             NSDictionary *resDic = (NSDictionary *)responseObject;
-            int state = [NonEmptyString(resDic[@"status"]) intValue];
-            if ( state == 0 ) {
+            int state = [NonEmptyString(resDic[@"code"]) intValue];
+            if ( state == 200 ) {
                 [self.view showMessage:@"短信发送成功!"];
             }
         }

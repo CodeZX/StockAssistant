@@ -15,10 +15,13 @@
 @interface NetManager : BaseNetManager
 
 ////注册
-+ (id)POSTRegisterPhone:(NSString *)phone pwd:(NSString *)pwd completionHandler:(void(^)(JYRegisterItem *essences, NSError *error))completionHandler;
++ (id)POSTRegisterPhone:(NSString *)phone pwd:(NSString *)pwd code:(NSString *)code completionHandler:(void(^)(JYRegisterItem *essences, NSError *error))completionHandler;
 //
 ////登录
 + (id)POSTloginPhone:(NSString *)phone pwd:(NSString *)pwd completionHandler:(void(^)(JYLoginItem *essences, NSError *error))completionHandler;
+
+// 获取验证码
++ (id)POSTPhoneCode:(NSString *)phone  code:(NSString *)code completionHandler:(void(^)(JYRegisterItem *essences, NSError *error))completionHandler;
 //
 ////精华页
 //+ (id)GETEssenceItem:(NSString *)lastKey completionHandler:(void(^)(JYEssenceItem *essences, NSError *error))completionHandler;

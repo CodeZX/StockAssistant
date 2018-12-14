@@ -19,6 +19,8 @@
 
 @interface JYCommunity_retData : JYCommunity
 
+
+@property (nonatomic, strong) NSString * post_id;///<帖子唯一id
 @property (nonatomic, strong) NSString * card_id;///<帖子唯一id
 @property (nonatomic, strong) NSString * user_id;///<用户id
 @property (nonatomic, strong) NSString * user_pic;///<用户头像

@@ -22,6 +22,8 @@
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         !completionHandler ?: completionHandler(responseObject, nil);
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+//        !completionHandler ?: completionHandler(task, error);
+//        TJLog(@"zzzzz%@",[error localizedDescription]);
     }];
 }
 

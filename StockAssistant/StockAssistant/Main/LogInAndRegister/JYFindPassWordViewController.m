@@ -131,7 +131,9 @@
 #pragma mark - 按钮点击事件
 //注册
 - (void)registerAction {
-    [NetManager POSTRegisterPhone:self.phoneTextField.text pwd:self.passwordTextField.text completionHandler:^(JYRegisterItem *essences, NSError *error) {
+    
+    NSString *code = @"";
+    [NetManager POSTRegisterPhone:self.phoneTextField.text pwd:self.passwordTextField.text code:code completionHandler:^(JYRegisterItem *essences, NSError *error) {
         
         [self.view showMessage:essences.msg];
         
