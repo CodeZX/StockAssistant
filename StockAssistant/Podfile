@@ -23,4 +23,5 @@ pod 'YYKit'
 
 pod 'JPush'
 pod 'JMessage'
+ pod 'TZImagePickerController'
 end

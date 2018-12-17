@@ -12,6 +12,7 @@
 //#import <AFNetworking/AFNetworking.h>
 #import <SDWebImage/UIImageView+WebCache.h>
 #import <MJExtension/MJExtension.h>
+#import <TZImagePickerController/TZImagePickerController.h>
 //#import <RongIMKit/RongIMKit.h>
 
 #import "CommonMacro.h"
